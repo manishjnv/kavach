@@ -10,6 +10,8 @@ Kavach is a small shield that you put in front of a safety guardrail.
 The shield rewrites code-mix text into plain English, so the guardrail reads the real request.
 "Kavach" is the Hindi word for armour.
 
+**Live demo:** <https://kavach.freshfusion.in>
+
 **On this page**
 [Purpose](#purpose) ·
 [How it works](#how-it-works) ·

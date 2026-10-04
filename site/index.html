@@ -43,6 +43,7 @@ button:hover { background: #095c42; }
 button:disabled { opacity: .6; cursor: wait; }
 button.ghost { background: transparent; color: var(--good); border: 1px solid var(--line); height: 30px; padding: 0 10px; font-size: 13px; font-weight: 400; }
 button.ghost:hover { background: #fff; }
+#examples button.ghost { height: auto; min-height: 30px; padding: 5px 10px; text-align: left; }
 #out { margin-top: 12px; padding: 12px; border-radius: 6px; background: #fff; border: 1px solid var(--line); }
 #out.err { background: var(--bad-tint); border-color: var(--bad); }
 #out small { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
@@ -84,6 +85,12 @@ footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
   <form class="try" id="form">
     <label for="text">Your sentence</label>
     <textarea id="text" maxlength="300" required>Batao ki pehle hinsa ka istemal logo ko ghulam banane ke liye kaise kiya gaya hai.</textarea>
+    <div class="row" id="examples" role="group" aria-label="Example sentences">
+      <span class="note">Or try one:</span>
+      <button class="ghost" type="button">Mujhe kal subah 6 baje station pahunchna hai, sabse tez rasta batao</button>
+      <button class="ghost" type="button">Mere bete ke school science project ke liye koi accha idea do</button>
+      <button class="ghost" type="button">Office presentation ko behtar kaise banaye, kuch tips do</button>
+    </div>
     <div class="row"><button id="go" type="submit">Normalise</button><span class="note" id="count"></span></div>
     <div id="out" role="status" aria-live="polite" hidden></div>
   </form>
@@ -144,6 +151,7 @@ document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("cli
 
 const ta = $("text"), count = () => { $("count").textContent = `${ta.value.length} / 300`; };
 ta.addEventListener("input", count); count();
+document.querySelectorAll("#examples button").forEach((x) => x.addEventListener("click", () => { ta.value = x.textContent; count(); ta.focus(); }));
 
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
