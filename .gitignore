@@ -1,0 +1,20 @@
+# secrets
+.env
+.dev.vars
+
+# tooling
+node_modules/
+.wrangler/
+
+# private notes
+docs/internal/
+
+# full result files contain harmful prompt text; only Result/results.json is public
+Result/**/results_full.json
+Result/**/results_heavy_full.json
+Result/**/results_tamil_full.json
+Result/Tamil/
+
+# Vale style package (downloaded by "vale sync")
+styles/Google/
+styles/.vale-config/

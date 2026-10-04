@@ -1,0 +1,4 @@
+bypass rate
+false positive rate
+jailbreak rate
+normaliser

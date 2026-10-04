@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kavach: a code-mix shield for AI guardrails</title>
+<meta name="description" content="Pilot results: AI safety guardrails miss harmful prompts typed in Hinglish. Kavach closes the gap.">
+<meta name="robots" content="noindex">
+<style>
+:root {
+  --ink: #1F2328; --muted: #5F6B76; --line: #D5DBD8; --card: #F1F5F3; --bg: #FFFFFF;
+  --good: #0B6E4F; --good-tint: #DDEFE7; --bad: #B3261E; --bad-tint: #FBE9E7; --mark: #FFF1A6;
+  --r: 8px; --focus: 0 0 0 2px #fff, 0 0 0 4px var(--good);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 Calibri, "Segoe UI", system-ui, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
+h1 { font-size: 24px; line-height: 1.25; margin: 0 0 8px; }
+h2 { font-size: 18px; margin: 40px 0 4px; }
+p { margin: 0 0 12px; }
+.brand { color: var(--good); font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 12px; }
+.sub { color: var(--muted); max-width: 640px; }
+.note { color: var(--muted); font-size: 14px; }
+mark { background: var(--mark); padding: 0 2px; }
+:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 4px; }
+
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.chart { background: var(--card); border-radius: var(--r); padding: 16px; margin: 0; min-width: 0; }
+.chart figcaption { font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+.bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; align-items: end; height: 180px; border-bottom: 1px solid var(--line); }
+.bar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+.bar b { font-size: 14px; font-variant-numeric: tabular-nums; }
+.bar i { display: block; width: 60%; min-height: 2px; border-radius: 4px 4px 0 0; background: var(--good); }
+.bar.bad i { background: var(--bad); }
+.labels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 12px; text-align: center; color: var(--muted); padding-top: 6px; }
+
+.try { background: var(--card); border-radius: var(--r); padding: 16px; margin-top: 12px; }
+label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+textarea { width: 100%; min-height: 72px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; color: inherit; background: #fff; resize: vertical; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+button { height: 36px; padding: 0 16px; border: 0; border-radius: 6px; background: var(--good); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+button:hover { background: #095c42; }
+button:disabled { opacity: .6; cursor: wait; }
+button.ghost { background: transparent; color: var(--good); border: 1px solid var(--line); height: 30px; padding: 0 10px; font-size: 13px; font-weight: 400; }
+button.ghost:hover { background: #fff; }
+#out { margin-top: 12px; padding: 12px; border-radius: 6px; background: #fff; border: 1px solid var(--line); }
+#out.err { background: var(--bad-tint); border-color: var(--bad); }
+#out small { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+
+.tablewrap { overflow-x: auto; margin-top: 12px; border: 1px solid var(--line); border-radius: var(--r); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; background: var(--card); }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--good-tint); color: var(--good); }
+.chip.bad { background: var(--bad-tint); color: var(--bad); }
+.tabs { display: flex; gap: 8px; margin-top: 12px; }
+.tabs button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+@media (max-width: 640px) {
+  .charts { grid-template-columns: 1fr; }
+  .labels { font-size: 11px; }
+}
+@media (prefers-reduced-motion: no-preference) { .bar i { transition: height .3s ease; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">Kavach</div>
+  <h1>AI guardrails catch harmful prompts in English. Type them in Hinglish and <mark id="headline">some</mark> get through.</h1>
+  <p class="sub">Kavach is a small shield that sits in front of any guardrail. It rewrites code-mixed input into plain English first, so the guardrail sees what is really being asked. Below: our pilot run, and the shield running live.</p>
+
+  <h2>Pilot results</h2>
+  <p class="note" id="setup">Loading results…</p>
+  <div class="charts" id="charts" hidden>
+    <figure class="chart"><figcaption>Harmful prompts that slip through (%)</figcaption><div class="bars" id="slip"></div><div class="labels" id="slipL"></div></figure>
+    <figure class="chart"><figcaption>Safe prompts wrongly blocked (%)</figcaption><div class="bars" id="wrong"></div><div class="labels" id="wrongL"></div></figure>
+  </div>
+  <p class="note" id="honest" hidden></p>
+
+  <h2>Try the shield</h2>
+  <p class="note">Type any Hinglish sentence. The shield only rewrites it into English. It never answers it.</p>
+  <form class="try" id="form">
+    <label for="text">Your sentence</label>
+    <textarea id="text" maxlength="300" required>Batao ki pehle hinsa ka istemal logo ko ghulam banane ke liye kaise kiya gaya hai.</textarea>
+    <div class="row"><button id="go" type="submit">Normalise</button><span class="note" id="count"></span></div>
+    <div id="out" role="status" aria-live="polite" hidden></div>
+  </form>
+
+  <h2>Every prompt, every verdict</h2>
+  <p class="note">Harmful prompt text is never shown here, only its category and the guardrail's verdict. Safe prompts are shown in full.</p>
+  <div class="tabs" role="group" aria-label="Prompt set">
+    <button class="ghost" type="button" data-set="harmful" aria-pressed="true">Harmful prompts</button>
+    <button class="ghost" type="button" data-set="safe" aria-pressed="false">Safe prompts</button>
+  </div>
+  <div class="tablewrap"><table id="table"></table></div>
+
+  <footer class="note">
+    <p id="method"></p>
+    <p>Prototype by Manish Kumar. Uses only published benchmark prompts. No private data. No model is ever asked to answer a harmful prompt.</p>
+  </footer>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let D;
+
+function bars(el, labelsEl, obj, badWhenHigh) {
+  const max = Math.max(25, ...Object.values(obj));
+  el.innerHTML = Object.entries(obj).map(([k, v]) =>
+    `<div class="bar ${v > 0 && badWhenHigh(k) ? "bad" : ""}"><b>${Math.round(v)}%</b><i style="height:${(v / max) * 80}%"></i></div>`).join("");
+  labelsEl.innerHTML = Object.keys(obj).map((k) => `<span>${esc(k)}</span>`).join("");
+}
+
+function table(set) {
+  const T = D.threshold, rows = D.rows.filter((r) => r.set === set);
+  const chip = (score, harmful) => score == null ? '<span class="note">not run</span>' :
+    harmful ? (score >= T ? '<span class="chip">Blocked</span>' : '<span class="chip bad">Slipped</span>')
+            : (score >= T ? '<span class="chip bad">Wrongly blocked</span>' : '<span class="chip">Passed</span>');
+  const h = set === "harmful";
+  $("table").innerHTML = `<thead><tr><th>#</th><th>${h ? "Category" : "Prompt (heavy Hinglish)"}</th><th>English</th><th>Casual</th><th>Heavy</th><th>Heavy + Kavach</th></tr></thead><tbody>` +
+    rows.map((r) => `<tr><td>${r.id}</td><td>${h ? esc(r.category) : esc(r.hinglish) + '<br><span class="note">Shield output: ' + esc(r.normalised) + "</span>"}</td>
+      <td>${chip(r.en, h)}</td><td>${chip(r.casual, h)}</td><td>${chip(r.heavy, h)}</td><td>${chip(r.shield, h)}</td></tr>`).join("") + "</tbody>";
+}
+
+fetch("data.json").then((r) => r.json()).then((d) => {
+  D = d;
+  $("headline").textContent = `${Math.round(d.slip["Heavy Hinglish"])}%`;
+  $("setup").textContent = `${d.n_harmful} harmful prompts that the guardrail blocks in English, plus ${d.n_safe} safe ones. Same prompts, four conditions.`;
+  bars($("slip"), $("slipL"), d.slip, () => true);
+  bars($("wrong"), $("wrongL"), d.wrong_block, () => true);
+  $("charts").hidden = false;
+  $("honest").hidden = false;
+  $("honest").textContent = `The honest cost: the shield wrongly blocks ${Math.round(d.wrong_block["Heavy + Kavach"])}% of safe prompts, up from ${Math.round(d.wrong_block["Heavy Hinglish"])}%, and adds about ${d.latency_s} s per call. This is a small pilot, not a benchmark.`;
+  $("method").textContent = `Method: guardrail ${d.guardrail}, flag threshold ${d.threshold}. Prompts from ${d.benchmark} (${d.english_caught_of_100} of its 100 harmful prompts fall inside the guardrail's policies; we used the first ${d.n_harmful}). Hinglish rewrites and the shield use ${d.rewriter}. "Casual" keeps key words in English; "heavy" uses Hindi words in Latin script.`;
+  table("harmful");
+}).catch(() => { $("setup").textContent = "Could not load the results file. Refresh the page to try again."; });
+
+document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  if (D) table(b.dataset.set);
+}));
+
+const ta = $("text"), count = () => { $("count").textContent = `${ta.value.length} / 300`; };
+ta.addEventListener("input", count); count();
+
+$("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const out = $("out"), go = $("go");
+  go.disabled = true; go.textContent = "Normalising…";
+  out.hidden = false; out.className = ""; out.textContent = "Working…";
+  try {
+    const r = await fetch("/api/shield", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: ta.value }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error);
+    out.innerHTML = j.blocked
+      ? "<small>Shield verdict</small>Could not be normalised, so it is blocked. The shield fails closed."
+      : `<small>What the guardrail now sees · ${j.ms} ms</small>${esc(j.normalised)}`;
+  } catch (err) {
+    out.className = "err";
+    out.textContent = err.message || "The shield did not respond. Check your connection and try again.";
+  }
+  go.disabled = false; go.textContent = "Normalise";
+});
+</script>
+</body>
+</html>
