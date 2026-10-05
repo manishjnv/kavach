@@ -14,7 +14,7 @@
   --bg: #FFFFFF; --surface: #F4F6F8; --surface-2: #EEF1F4; --ink: #0B0D10; --muted: #3D4650; --line: #DCE1E6;
   --brand: #1E56D9; --brand-ink: #FFFFFF; --brand-tint: #E6EDFC;
   --risk: #B9410B; --risk-ink: #FFFFFF; --risk-tint: #FDE8DF;
-  --safe: #0E7C6B; --bar: #8A96A3;
+  --safe: #0E7C6B; --safe-ink: #FFFFFF; --safe-tint: #DDF3EE; --bar: #8A96A3;
   --shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px -1px rgba(0,0,0,.1); --shadow-sm: 0 1px 2px 0 rgba(0,0,0,.05);
 }
 @media (prefers-color-scheme: dark) {
@@ -22,7 +22,7 @@
     --bg: #0F1318; --surface: #171C23; --surface-2: #1F252E; --ink: #EEF1F4; --muted: #A3ADB8; --line: #2A313A;
     --brand: #7FA3F5; --brand-ink: #0F1318; --brand-tint: #1A2745;
     --risk: #F0905E; --risk-ink: #0F1318; --risk-tint: #3A2114;
-    --safe: #5FC9B4; --bar: #5B6672;
+    --safe: #5FC9B4; --safe-ink: #0F1318; --safe-tint: #11302A; --bar: #5B6672;
     --shadow: none; --shadow-sm: none;
   }
 }
@@ -30,7 +30,7 @@
   --bg: #0F1318; --surface: #171C23; --surface-2: #1F252E; --ink: #EEF1F4; --muted: #A3ADB8; --line: #2A313A;
   --brand: #7FA3F5; --brand-ink: #0F1318; --brand-tint: #1A2745;
   --risk: #F0905E; --risk-ink: #0F1318; --risk-tint: #3A2114;
-  --safe: #5FC9B4; --bar: #5B6672;
+  --safe: #5FC9B4; --safe-ink: #0F1318; --safe-tint: #11302A; --bar: #5B6672;
   --shadow: none; --shadow-sm: none;
 }
 * { box-sizing: border-box; }
@@ -61,8 +61,10 @@ a:focus-visible, button:focus-visible, textarea:focus-visible, summary:focus-vis
 
 /* header */
 header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
-.logo { display: flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; color: var(--ink); text-decoration: none; }
-.logo svg { color: var(--brand); }
+.logo { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--ink); text-decoration: none; }
+.logo svg { color: var(--brand); width: 36px; height: 36px; }
+.logo b { display: block; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 28px; line-height: 1.1; }
+.logo small { display: block; font-size: 13px; font-weight: 500; color: var(--muted); line-height: 1.3; }
 nav { display: flex; gap: 4px; flex-wrap: wrap; }
 nav a { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: none; }
 
@@ -98,11 +100,17 @@ h1 mark { color: var(--risk); background: var(--risk-tint); padding: 0 10px; bor
 /* demo */
 .try { padding: clamp(16px, 3vw, 32px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: clamp(24px, 3.5vw, 48px); align-items: start; }
 .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px 16px; align-content: start; min-width: 0; }
-.group { display: flex; flex-direction: column; gap: 8px; }
-.group h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.group { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 10px; border: 1px solid var(--line); }
+.group.risk { background: var(--risk-tint); border-color: var(--risk); }
+.group.safe { background: var(--safe-tint); border-color: var(--safe); }
+.group h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+.group.risk h3 { color: var(--risk); } .group.safe h3 { color: var(--safe); }
+.group .hint { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
 .group.risk h3 svg { color: var(--risk); } .group.safe h3 svg { color: var(--safe); }
-.sample { text-align: left; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font: inherit; font-size: 14px; font-weight: 500; line-height: 1.4; min-height: 44px; box-shadow: var(--shadow-sm); cursor: pointer; }
-.sample[aria-pressed="true"] { background: var(--brand-tint); border-color: var(--brand); }
+.sample { text-align: left; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font: inherit; font-size: 14px; font-weight: 500; line-height: 1.4; min-height: 44px; box-shadow: var(--shadow-sm); cursor: pointer; }
+.sample[aria-pressed="true"] { border-color: var(--brand); outline: 2px solid var(--brand); }
+.group.risk .sample[aria-pressed="true"] { border-color: var(--risk); outline-color: var(--risk); }
+.group.safe .sample[aria-pressed="true"] { border-color: var(--safe); outline-color: var(--safe); }
 .io { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .field { display: flex; flex-direction: column; gap: 8px; }
 label { font-weight: 500; font-size: 14px; line-height: 1; }
@@ -114,6 +122,18 @@ button:disabled { opacity: .6; cursor: wait; }
 .pane.before { background: var(--surface); }
 .pane.after { background: var(--bg); border-color: var(--brand); }
 .pane.err { background: var(--risk-tint); border-color: var(--risk); }
+.pane.after.lit { background: var(--brand-tint); box-shadow: 0 0 0 3px var(--brand-tint); }
+@media (prefers-reduced-motion: no-preference) { .pane.after.lit { animation: lit 1.4s ease; } @keyframes lit { 0% { box-shadow: 0 0 0 0 rgba(30,86,217,.55); } 100% { box-shadow: 0 0 0 16px rgba(30,86,217,0); } } }
+.status { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+.status svg { flex: none; margin-top: 2px; }
+.status.risk { background: var(--risk); color: var(--risk-ink); }
+.status.safe { background: var(--safe); color: var(--safe-ink); }
+.status.own { background: var(--surface-2); color: var(--ink); }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.flow div { font-size: 13px; line-height: 1.35; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+.flow div.done { background: var(--bg); color: var(--ink); border-color: var(--brand); }
+.flow b { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--brand); margin-bottom: 2px; }
+.flow div:not(.done) b { color: var(--muted); }
 .pane .head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: 12px; font-weight: 500; }
 .pane p { font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
 .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; background: var(--surface); color: var(--ink); }
@@ -161,7 +181,7 @@ footer .sep { grid-column: 1 / -1; height: 1px; background: var(--line); margin-
 <body>
 <main>
   <header>
-    <a class="logo" href="#"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/></svg>Kavach</a>
+    <a class="logo" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/></svg><span><b>Kavach</b><small>Armour for AI guardrails. Catches harmful prompts in Hinglish.</small></span></a>
     <nav aria-label="Main">
       <a href="#how">How it works</a>
       <a href="#try">Try it</a>
@@ -203,8 +223,8 @@ footer .sep { grid-column: 1 / -1; height: 1px; background: var(--line); margin-
     <p class="muted">Pick a sample, or type any Hinglish sentence. You will see what the guardrail read <strong>before</strong> and what it reads <strong>after Kavach</strong>.</p>
     <form class="card try" id="form">
       <div class="samples">
-        <div class="group risk" role="group" aria-labelledby="risky-h"><h3 id="risky-h"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L2.5 17.5A2 2 0 004.2 20.5h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>Risky prompts</h3><div class="list" data-group="risk"></div></div>
-        <div class="group safe" role="group" aria-labelledby="safe-h"><h3 id="safe-h"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Safe prompts</h3><div class="list" data-group="safe"></div></div>
+        <div class="group risk" role="group" aria-labelledby="risky-h"><h3 id="risky-h"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L2.5 17.5A2 2 0 004.2 20.5h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>Risky prompts</h3><p class="hint">Harmful requests. Click one and watch the shield expose the intent in plain English, so the guardrail can block it.</p><div class="list" data-group="risk"></div></div>
+        <div class="group safe" role="group" aria-labelledby="safe-h"><h3 id="safe-h"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Safe prompts</h3><p class="hint">Harmless requests. Click one and watch it pass through the shield, and see where the guardrail still over-blocks.</p><div class="list" data-group="safe"></div></div>
       </div>
       <div class="io">
         <div class="field">
@@ -214,9 +234,11 @@ footer .sep { grid-column: 1 / -1; height: 1px; background: var(--line); margin-
         </div>
         <div class="row"><button class="btn brand" id="go" type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z"/></svg>Run the shield</button></div>
         <div id="out" role="status" aria-live="polite" hidden>
+          <div class="status" id="status"></div>
+          <div class="flow" id="flow"></div>
           <div class="panes">
-            <div class="pane before"><div class="head">Before · what the guardrail read</div><p id="before"></p></div>
-            <div class="pane after" id="afterPane"><div class="head"><span id="afterLabel">After Kavach · what the guardrail reads now</span><span class="pill brand num" id="ms" hidden></span></div><p id="after"></p></div>
+            <div class="pane before"><div class="head">Before · the guardrail read this Hinglish</div><p id="before"></p></div>
+            <div class="pane after" id="afterPane"><div class="head"><span id="afterLabel">After Kavach · the guardrail now reads this English</span><span class="pill brand num" id="ms" hidden></span></div><p id="after"></p></div>
           </div>
           <div class="verdict" id="verdict" style="margin-top:20px"></div>
         </div>
@@ -342,6 +364,30 @@ document.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("clic
   pick(g, i, true);
 }));
 
+const WARN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L2.5 17.5A2 2 0 004.2 20.5h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>';
+const TICK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>';
+function statusFor(p) {
+  if (!p) return ["own", "", "Your own sentence. The shield rewrites it into English below. The guardrail verdict is not run live in this demo."];
+  if (p.g === "risk") return ["risk", WARN, "You picked a RISKY prompt. In Hinglish the guardrail read it poorly. Below, the shield turns it into plain English so the harmful intent is visible and the guardrail can block it."];
+  return ["safe", TICK, "You picked a SAFE prompt. Below, the shield rewrites it into English with the same meaning. A good shield lets it pass; the pilot verdicts show whether the guardrail over-blocked it."];
+}
+function flow(p, j) {
+  const kind = !p ? "own sentence" : p.g === "risk" ? "risky sample" : "safe sample";
+  let third;
+  if (!j) third = ["Guardrail reads the English", "waiting for the shield…", false];
+  else if (j.blocked) third = ["Guardrail", "Nothing to read. The prompt is blocked.", true];
+  else if (!p) third = ["Guardrail reads the English", "Not scored live in this demo.", true];
+  else if (p.g === "risk") third = ["Guardrail reads the English", "The intent is now clear in English. In the pilot, 0 of 30 harmful prompts slipped after Kavach.", true];
+  else {
+    const r = D && p.id != null ? D.rows.find((x) => x.set === "safe" && x.id === p.id) : null;
+    third = ["Guardrail reads the English", r ? (r.shield >= D.threshold ? "Pilot verdict: wrongly blocked. The honest cost." : "Pilot verdict: passed.") : "Not scored live in this demo.", true];
+  }
+  const steps = [["1 · Prompt picked", `A ${kind}, loaded into the box above.`, true],
+                 ["2 · Shield rewrote it", j ? (j.blocked ? "Could not rewrite, so it fails closed." : `Plain English in ${j.ms} ms. Nothing was answered.`) : "rewriting…", !!j],
+                 ["3 · " + third[0], third[1], third[2]]];
+  $("flow").innerHTML = steps.map(([t, d, done]) => `<div class="${done ? "done" : ""}"><b>${t}</b>${d}</div>`).join("");
+}
+
 function verdictFor(p) {
   if (!p) return "<span>Guardrail scores are not run live in this demo. The verdicts in the pilot results below come from the recorded run.</span>";
   if (p.g === "risk") {
@@ -362,6 +408,10 @@ $("form").addEventListener("submit", async (e) => {
   $("out").hidden = false; $("before").textContent = ta.value;
   pane.className = "pane after"; $("afterLabel").textContent = "After Kavach · rewriting…"; $("after").textContent = ""; $("ms").hidden = true;
   $("verdict").innerHTML = "";
+  const [kind, icon, msg] = statusFor(p);
+  $("status").className = "status " + kind; $("status").innerHTML = icon + "<span>" + msg + "</span>";
+  flow(p, null);
+  $("out").scrollIntoView({ block: "nearest" });
   try {
     const r = await fetch("/api/shield", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: ta.value }) });
     const j = await r.json();
@@ -371,10 +421,13 @@ $("form").addEventListener("submit", async (e) => {
       $("afterLabel").textContent = "After Kavach · blocked";
       $("after").textContent = "The shield could not rewrite this, so the prompt is blocked. Kavach fails closed.";
     } else {
-      $("afterLabel").textContent = "After Kavach · what the guardrail reads now";
+      $("afterLabel").textContent = "After Kavach · the guardrail now reads this English";
       $("after").textContent = j.normalised;
     }
+    pane.classList.add("lit");
+    flow(p, j);
     $("verdict").innerHTML = verdictFor(p);
+    pane.scrollIntoView({ block: "nearest" });
   } catch (err) {
     pane.className = "pane after err";
     $("afterLabel").textContent = "The shield did not respond";
